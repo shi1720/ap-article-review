@@ -1,95 +1,59 @@
-# AP Article Evaluation App
+# AP Article Review
 
-## Overview
+Review batches of AP learning articles against configurable quality prompts, inspect model feedback and export review results.
 
-The AP Article Evaluation App is a powerful tool designed to assist educators and content creators in evaluating and improving Advanced Placement (AP) articles. This app uses advanced AI to analyze articles based on various criteria, ensuring they meet the rigorous standards required for AP courses.
+**Stack:** Python / Streamlit. **Status:** reference implementation. Provider integrations require your own credentials and service access.
 
-**Live App**: [https://ap-articles-st-app.streamlit.app/](https://ap-articles-st-app.streamlit.app/)
+## Run locally
 
-## Features
+Use Python 3.12 and a virtual environment. Commands below run from the repository root.
 
-- **Multiple AP Course Support**: 
-  - Evaluate articles for various AP courses including World History, US History, Biology, Chemistry, and more.
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --require-hashes -r requirements.lock.txt
+```
 
-- **Dual Input Methods**: 
-  - Text input for individual articles
-  - CSV upload for bulk processing
+Where the interface asks for a provider key or backend address, supply your own authorized configuration at runtime. The repository does not supply access to an external service.
 
-- **Comprehensive Evaluation**:
-  - Format and word count check
-  - Alignment with key concepts and skills
-  - Relevance to themes and learning objectives
-  - Concept and formula inclusion analysis
-  - Sufficiency for AP question response
-  - Factual accuracy and objectivity assessment
-  - Engagement and clarity evaluation
+```bash
+python -m streamlit run st-qc-articles.py --server.address 127.0.0.1
+```
 
-- **Detailed Feedback**: 
-  - Individual scores for each evaluation aspect
-  - Final evaluation with strengths and weaknesses
-  - Actionable feedback for improvement
+Open the localhost URL printed by Streamlit. Start with a small synthetic input, review the result, then export or continue the workflow.
 
-- **User-Friendly Interface**:
-  - Interactive Streamlit app
-  - Progress tracking for bulk processing
-  - Downloadable results for CSV input
+## Repository map
 
-## How to Use
+| Path | Role |
+| --- | --- |
+| [`st-qc-articles.py`](st-qc-articles.py) | Application entrypoint and workflow logic |
+| [`requirements.txt`](requirements.txt) | Direct Python dependencies |
+| [`requirements.lock.txt`](requirements.lock.txt) | Pinned Python 3.12 dependencies with integrity hashes |
+| [`.github/workflows/repository-quality.yml`](.github/workflows/repository-quality.yml) | Offline maintenance checks |
 
-1. **Access the App**: 
-   Visit [https://ap-articles-st-app.streamlit.app/](https://ap-articles-st-app.streamlit.app/)
+## Validation
 
-2. **Enter API Key**:
-   - Input your Anthropic API Key in the provided field
-   - This key is required for the AI-powered evaluations
+```bash
+python .github/scripts/repository_check.py --self-test
+python .github/scripts/repository_check.py
+```
 
-3. **Select AP Course**:
-   - Choose the relevant AP course for your article(s)
+CI checks Python syntax, local documentation links and credential patterns without importing the app or calling a model. It does not establish grading accuracy or current provider availability. For integration validation, use synthetic examples and compare the output with known answers.
 
-4. **Choose Input Method**:
-   - **Text Input**: 
-     - Enter article details including topic, themes, objectives, key concepts, article text, and sample questions
-   - **CSV Upload**: 
-     - Prepare a CSV file with columns: Topic, Themes, Objectives, Key Concepts, Article, Questions
-     - Upload the CSV file
+## Operating notes
 
-5. **Process Articles**:
-   - For text input, click "Evaluate Article"
-   - For CSV upload, click "Process CSV"
+Model names, remote endpoints and prompt assumptions reflect the original implementation. Review them before connecting current services. Keep provider keys, service-account files and private learning data outside the repository. Any credential previously committed must be rotated; removing it from the current tree does not invalidate earlier copies.
 
-6. **Review Results**:
-   - Examine individual evaluation aspects
-   - Check the final evaluation for overall quality
-   - For CSV input, download the processed file with results
+## Contributing
 
-## CSV Format
+Keep changes focused and add regression coverage for behavior changes. Include synthetic reproduction data and the checks actually run. See the account [contribution guide](https://github.com/shi1720/.github/blob/main/CONTRIBUTING.md) and [private security reporting process](https://github.com/shi1720/.github/blob/main/SECURITY.md).
 
-When using CSV upload, ensure your file has the following columns:
-- Topic
-- Themes
-- Objectives
-- Key Concepts
-- Article
-- Questions
+No open-source license is currently granted by this repository. Preserve existing ownership and obtain permission before reuse or redistribution.
 
-## Local Development
+## Refresh dependencies
 
-To run the app locally:
+```bash
+uv pip compile --python-version 3.12 --universal --generate-hashes requirements.txt -o requirements.lock.txt
+```
 
-1. Clone the repository
-2. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
-3. Run the app:
-   ```
-   streamlit run app.py
-   ```
-
-## Security Note
-
-The app requires an Anthropic API key for operation. This key is entered by the user and is not stored or logged by the application. Always keep your API key confidential.
-
-## Feedback and Contributions
-
-We welcome feedback and contributions to improve the AP Article Evaluation App. Please open an issue or submit a pull request on our GitHub repository.
+Validate the relevant provider integrations before deploying dependency updates. A lockfile fixes dependency resolution; it does not establish that a historical model endpoint is still available.
